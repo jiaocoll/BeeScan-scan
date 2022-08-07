@@ -325,9 +325,9 @@ func HandleTargets(queue *job.Queue, fofaPrints *fringerprint.FofaPrints) []*Run
 							var err1 error
 							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
 								ip := getipbydomain.GetIPbyDomain(t)
-								runner2, err1 = NewRunner(ip, target[1], t, "udp", fofaPrints)
+								runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
 							} else {
-								runner2, err1 = NewRunner(t, target[1], "", "udp", fofaPrints)
+								runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
 							}
 							if err1 != nil {
 								log2.Error("[HandleTargets]:", err1)
