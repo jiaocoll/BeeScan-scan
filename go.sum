@@ -274,8 +274,6 @@ github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpO
 github.com/iancoleman/strcase v0.2.0/go.mod h1:iwCmte+B7n89clKwxIoIXy/HfoL7AsD47ZCWhYzw7ho=
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/ianlancetaylor/demangle v0.0.0-20200824232613-28f6c0f3b639/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
-github.com/jiaocoll/GoWapp v0.0.0-20220119070400-84ad7a38481d h1:hGBbHz31OuT+8ivtxaO6LSoiD63Hb1BM663soSDrQH0=
-github.com/jiaocoll/GoWapp v0.0.0-20220119070400-84ad7a38481d/go.mod h1:oORXYgT9VpGyCEpSytx0ukKNCFFn4xAyQaQ/y5hREjw=
 github.com/jiaocoll/GoWapp v0.0.1 h1:whkUE9OxUVuUstWe2k+GQf3/GCRlnzARztxK7437rOQ=
 github.com/jiaocoll/GoWapp v0.0.1/go.mod h1:oORXYgT9VpGyCEpSytx0ukKNCFFn4xAyQaQ/y5hREjw=
 github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=

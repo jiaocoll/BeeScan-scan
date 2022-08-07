@@ -266,89 +266,112 @@ func HandleTargets(queue *job.Queue, fofaPrints *fringerprint.FofaPrints) []*Run
 				target := strings.Split(v, ":")
 				if len(target) > 0 {
 					tmptarget := util.TargetsHandle(target[0]) //目标处理，若是c段地址，则返回一个ip段，若是单个ip，则直接返回单个ip切片，若是域名或url地址，则返回域名
-					for _, t := range tmptarget {
-						var runner2 *Runner
-						var err1 error
-						if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-							ip := getipbydomain.GetIPbyDomain(t)
-							if strings.Contains(target[1], "U:") {
-								tmp := strings.Split(target[1], ":")
-								port := tmp[1]
-								runner2, err1 = NewRunner(ip, port, t, "udp", fofaPrints)
+					if len(target) == 3 && target[1] == "U" {
+						for _, t := range tmptarget {
+							var runner2 *Runner
+							var err1 error
+							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
+								ip := getipbydomain.GetIPbyDomain(t)
+								runner2, err1 = NewRunner(ip, target[2], t, "udp", fofaPrints)
+							} else {
+								runner2, err1 = NewRunner(t, target[2], "", "udp", fofaPrints)
 							}
-							runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
-						} else {
-							if strings.Contains(target[1], "U") {
-								tmp := strings.Split(target[1], ":")
-								port := tmp[1]
-								runner2, err1 = NewRunner(t, port, "", "udp", fofaPrints)
+							if err1 != nil {
+								log2.Error("[HandleTargets]:", err1)
 							}
-							runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
+							runners = append(runners, runner2)
 						}
-						if err1 != nil {
-							log2.Error("[HandleTargets]:", err1)
+					} else {
+						for _, t := range tmptarget {
+							var runner2 *Runner
+							var err1 error
+							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
+								ip := getipbydomain.GetIPbyDomain(t)
+								runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
+							} else {
+								runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
+							}
+							if err1 != nil {
+								log2.Error("[HandleTargets]:", err1)
+							}
+							runners = append(runners, runner2)
 						}
-						runners = append(runners, runner2)
 					}
+
 				}
 			} else if strings.Contains(v, "https") {
 				vtarget := v[8:]
 				target := strings.Split(vtarget, ":")
 				if len(v) > 0 {
 					tmptarget := util.TargetsHandle(v) //目标处理，若是c段地址，则返回一个ip段，若是单个ip，则直接返回单个ip切片，若是域名或url地址，则返回域名
-					for _, t := range tmptarget {
-						var runner2 *Runner
-						var err1 error
-						if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-							ip := getipbydomain.GetIPbyDomain(t)
-							if strings.Contains(target[1], "U:") {
-								tmp := strings.Split(target[1], ":")
-								port := tmp[1]
-								runner2, err1 = NewRunner(ip, port, t, "udp", fofaPrints)
+					if len(target) == 3 && target[1] == "U" {
+						for _, t := range tmptarget {
+							var runner2 *Runner
+							var err1 error
+							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
+								ip := getipbydomain.GetIPbyDomain(t)
+								runner2, err1 = NewRunner(ip, target[1], t, "udp", fofaPrints)
+							} else {
+								runner2, err1 = NewRunner(t, target[1], "", "udp", fofaPrints)
 							}
-							runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
-						} else {
-							if strings.Contains(target[1], "U") {
-								tmp := strings.Split(target[1], ":")
-								port := tmp[1]
-								runner2, err1 = NewRunner(t, port, "", "udp", fofaPrints)
+							if err1 != nil {
+								log2.Error("[HandleTargets]:", err1)
 							}
-							runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
+							runners = append(runners, runner2)
 						}
-						if err1 != nil {
-							log2.Error("[HandleTargets]:", err1)
+					} else {
+						for _, t := range tmptarget {
+							var runner2 *Runner
+							var err1 error
+							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
+								ip := getipbydomain.GetIPbyDomain(t)
+								runner2, err1 = NewRunner(ip, target[1], t, "udp", fofaPrints)
+							} else {
+								runner2, err1 = NewRunner(t, target[1], "", "udp", fofaPrints)
+							}
+							if err1 != nil {
+								log2.Error("[HandleTargets]:", err1)
+							}
+							runners = append(runners, runner2)
 						}
-						runners = append(runners, runner2)
 					}
+
 				}
 			} else if strings.Contains(v, "http") {
 				vtarget := v[7:]
 				target := strings.Split(vtarget, ":")
 				if len(v) > 0 {
 					tmptarget := util.TargetsHandle(v) //目标处理，若是c段地址，则返回一个ip段，若是单个ip，则直接返回单个ip切片，若是域名或url地址，则返回域名
-					for _, t := range tmptarget {
-						var runner2 *Runner
-						var err1 error
-						if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-							ip := getipbydomain.GetIPbyDomain(t)
-							if strings.Contains(target[1], "U:") {
-								tmp := strings.Split(target[1], ":")
-								port := tmp[1]
-								runner2, err1 = NewRunner(ip, port, t, "udp", fofaPrints)
+					if len(target) == 3 && target[1] == "U" {
+						for _, t := range tmptarget {
+							var runner2 *Runner
+							var err1 error
+							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
+								ip := getipbydomain.GetIPbyDomain(t)
+								runner2, err1 = NewRunner(ip, target[1], t, "udp", fofaPrints)
+							} else {
+								runner2, err1 = NewRunner(t, target[1], "", "udp", fofaPrints)
 							}
-							runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
-						} else {
-							if strings.Contains(target[1], "U") {
-								tmp := strings.Split(target[1], ":")
-								port := tmp[1]
-								runner2, err1 = NewRunner(t, port, "", "udp", fofaPrints)
+							if err1 != nil {
+								log2.Error("[HandleTargets]:", err1)
 							}
-							runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
+							runners = append(runners, runner2)
 						}
-						if err1 != nil {
-							log2.Error("[HandleTargets]:", err1)
+					} else {
+						for _, t := range tmptarget {
+							var runner2 *Runner
+							var err1 error
+							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
+								ip := getipbydomain.GetIPbyDomain(t)
+								runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
+							} else {
+								runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
+							}
+							if err1 != nil {
+								log2.Error("[HandleTargets]:", err1)
+							}
+							runners = append(runners, runner2)
 						}
-						runners = append(runners, runner2)
 					}
 				}
 			}
