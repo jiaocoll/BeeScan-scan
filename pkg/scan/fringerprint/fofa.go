@@ -117,7 +117,19 @@ func (f *Fofa) Matcher(response *httpx.Response, gomapres *gonmap.Result, port s
 		} else {
 			paramters["port"] = ""
 		}
-
+	} else {
+		paramters["title"] = ""
+		paramters["server"] = ""
+		paramters["protocol"] = ""
+		paramters["header"] = ""
+		paramters["banner"] = ""
+		paramters["body"] = ""
+		paramters["cert"] = ""
+		if port != "" {
+			paramters["port"] = port
+		} else {
+			paramters["port"] = ""
+		}
 	}
 
 	result, err := expression.Evaluate(paramters)
@@ -210,7 +222,7 @@ func HelperFunctions(resp *httpx.Response, gomapres *gonmap.Result, port string)
 		pattern := strings.ToLower(toString(args[0]))
 		var server string
 		if resp != nil {
-			server = resp.GetHeader("server")
+			server = resp.GetHeader("Server")
 		} else {
 			server = ""
 		}

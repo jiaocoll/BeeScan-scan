@@ -3,7 +3,6 @@ package gowapp
 import (
 	log2 "BeeScan-scan/pkg/log"
 	"BeeScan-scan/pkg/result"
-	"BeeScan-scan/pkg/scan/httpcheck"
 	"embed"
 	"fmt"
 	gowap "github.com/jiaocoll/GoWapp/pkg/core"
@@ -74,7 +73,7 @@ func GowappInit(f embed.FS) (*gowap.Wappalyzer, error) {
 
 // GoWapp Wappalyzer识别模块
 func GoWapp(r *result.Output, wapp *gowap.Wappalyzer) *gowap.Output {
-	if httpcheck.HttpCheck(r.Domain, r.Port, r.Ip) {
+	if r.Webbanner.Header != "" {
 		if r != nil {
 			if r.Ip != "" {
 				log2.Info("[GoWapp]:", r.Ip)

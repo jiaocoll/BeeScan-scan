@@ -11,10 +11,12 @@ require (
 	github.com/olivere/elastic/v7 v7.0.31
 	github.com/panjf2000/ants/v2 v2.4.7
 	github.com/projectdiscovery/fastdialer v0.0.15-0.20220127193345-f06b0fd54d47
+	github.com/projectdiscovery/fdmax v0.0.3
 	github.com/projectdiscovery/hmap v0.0.2-0.20210917080408-0fd7bd286bfa
 	github.com/projectdiscovery/mapcidr v0.0.8
 	github.com/projectdiscovery/rawhttp v0.0.7
 	github.com/projectdiscovery/retryablehttp-go v1.0.2
+	github.com/remeh/sizedwaitgroup v1.0.0
 	github.com/spf13/viper v1.10.1
 	github.com/valyala/fasthttp v1.32.0
 	github.com/yl2chen/cidranger v1.0.2

@@ -15,9 +15,9 @@ NodeConfig:
 # 任务池配置
 WorkerConfig:
   #任务池数量
-  WorkerNumber: 10
+  WorkerNumber: 3
   # 速率配置(每秒最多运行任务数)
-  Thread: 6
+  Thread: 3
 
 # Log配置
 LogConfig:

@@ -87,7 +87,7 @@ func (r *Runner) do(fullUrl string) (*httpx.Response, error) {
 	return resp, err2
 }
 
-// Request FOFA指纹识别
+// Request 指纹识别
 func (r *Runner) Request() result.FingerResult {
 	var resp *httpx.Response
 	var fullUrl string
@@ -96,128 +96,126 @@ func (r *Runner) Request() result.FingerResult {
 			r.Close()
 		}
 	}
-	if httpcheck.HttpCheck(r.Domain, r.Port, r.Ip) {
+	log2.Info("[HttpRequest]:", r.Ip)
 
-		log2.Info("[HttpRequest]:", r.Ip)
-
-		retried := false
-		protocol := httpx.HTTP
-	retry:
-		if r.Domain != "" {
-			fullUrl = fmt.Sprintf("%s://%s:%s", protocol, r.Domain, r.Port)
-		} else {
-			fullUrl = fmt.Sprintf("%s://%s:%s", protocol, r.Ip, r.Port)
-		}
-		timeStart := time.Now()
-
-		resp = &httpx.Response{}
-		var err error
-		resp, err = r.do(fullUrl)
-		if err != nil {
-			if !retried {
-				if protocol == httpx.HTTPS {
-					protocol = httpx.HTTP
-				} else {
-					protocol = httpx.HTTPS
-				}
-				retried = true
-				goto retry
-			}
-		}
-
-		builder := &strings.Builder{}
-		builder.WriteString(fullUrl)
-
-		var title string
-		if resp != nil {
-			title = resp.Title
-		}
-
-		p, err := url.Parse(fullUrl)
-		var ip string
-		var ipArray []string
-		if err != nil {
-			ip = ""
-		} else {
-			hostname := p.Hostname()
-			ip = r.Ht.Dialer.GetDialedIP(hostname)
-			// ip为空，看看p.host是不是ip
-			if ip == "" {
-				address := net.ParseIP(hostname)
-				if address != nil {
-					ip = address.String()
-				}
-			}
-		}
-		dnsData, err := r.Ht.Dialer.GetDNSData(p.Host)
-		if dnsData != nil && err == nil {
-			ipArray = append(ipArray, dnsData.CNAME...)
-			ipArray = append(ipArray, dnsData.A...)
-			ipArray = append(ipArray, dnsData.AAAA...)
-		}
-		cname := strings.Join(ipArray, ",")
-
-		// CDN检测
-		cdn, err := r.Ht.CDNCheck(resp, r.Ip, cname)
-		if err != nil {
-			log2.Warn("[CDNCheck]:", err)
-		}
-
-		// 指纹处理
-		fofaResults, err := r.Fofa.Matcher(resp, r.Output.Servers, r.Port)
-		if err != nil {
-			log2.Warn("[FOFAFinger]:", err)
-		}
-		var webbanner result.FingerResult
-		if resp != nil {
-			if resp.TLSData != nil {
-				webbanner = result.FingerResult{
-					Title:         title,
-					TLSData:       resp.TLSData,
-					ContentLength: resp.ContentLength,
-					StatusCode:    resp.StatusCode,
-					ResponseTime:  time.Since(timeStart).String(),
-					Str:           builder.String(),
-					Header:        resp.HeaderStr,
-					FirstLine:     resp.FirstLine,
-					Headers:       resp.Headers,
-					DataStr:       resp.DataStr,
-					Fingers:       fofaResults,
-					CDN:           cdn,
-				}
-			} else {
-				tlsdata := &httpx.TLSData{
-					DNSNames:           nil,
-					EmailAddresses:     nil,
-					CommonName:         nil,
-					Organization:       nil,
-					IssuerCommonName:   nil,
-					IssuerOrg:          nil,
-					OrganizationalUnit: nil,
-					Issuer:             nil,
-					Subject:            nil,
-				}
-				webbanner = result.FingerResult{
-					Title:         title,
-					TLSData:       tlsdata,
-					ContentLength: resp.ContentLength,
-					StatusCode:    resp.StatusCode,
-					ResponseTime:  time.Since(timeStart).String(),
-					Str:           builder.String(),
-					Header:        resp.HeaderStr,
-					FirstLine:     resp.FirstLine,
-					Headers:       resp.Headers,
-					DataStr:       resp.DataStr,
-					Fingers:       fofaResults,
-					CDN:           cdn,
-				}
-			}
-		} else {
-			webbanner = result.FingerResult{}
-		}
-		return webbanner
+	retried := false
+	protocol := httpx.HTTPS
+retry:
+	if r.Domain != "" && r.Port != "80" {
+		fullUrl = fmt.Sprintf("%s://%s:%s", protocol, r.Domain, r.Port)
+	} else if r.Port != "80" {
+		fullUrl = fmt.Sprintf("%s://%s:%s", protocol, r.Ip, r.Port)
+	} else {
+		fullUrl = fmt.Sprintf("%s://%s", protocol, r.Ip)
 	}
-	return result.FingerResult{}
+	timeStart := time.Now()
+
+	resp = &httpx.Response{}
+	var err error
+	resp, err = r.do(fullUrl)
+	if err != nil {
+		if !retried {
+			if protocol == httpx.HTTPS {
+				protocol = httpx.HTTP
+			} else {
+				protocol = httpx.HTTPS
+			}
+			retried = true
+			goto retry
+		}
+	}
+
+	builder := &strings.Builder{}
+	builder.WriteString(fullUrl)
+
+	var title string
+	if resp != nil {
+		title = resp.Title
+	}
+
+	p, err := url.Parse(fullUrl)
+	var ip string
+	var ipArray []string
+	if err != nil {
+		ip = ""
+	} else {
+		hostname := p.Hostname()
+		ip = r.Ht.Dialer.GetDialedIP(hostname)
+		// ip为空，看看p.host是不是ip
+		if ip == "" {
+			address := net.ParseIP(hostname)
+			if address != nil {
+				ip = address.String()
+			}
+		}
+	}
+	dnsData, err := r.Ht.Dialer.GetDNSData(p.Host)
+	if dnsData != nil && err == nil {
+		ipArray = append(ipArray, dnsData.CNAME...)
+		ipArray = append(ipArray, dnsData.A...)
+		ipArray = append(ipArray, dnsData.AAAA...)
+	}
+	cname := strings.Join(ipArray, ",")
+
+	// CDN检测
+	cdn, err := r.Ht.CDNCheck(resp, r.Ip, cname)
+	if err != nil {
+		log2.Warn("[CDNCheck]:", err)
+	}
+
+	// 指纹处理
+	fofaResults, err := r.Fofa.Matcher(resp, r.Output.Servers, r.Port)
+	if err != nil {
+		log2.Warn("[FOFAFinger]:", err)
+	}
+	var webbanner result.FingerResult
+	if resp != nil {
+		if resp.TLSData != nil {
+			webbanner = result.FingerResult{
+				Title:         title,
+				TLSData:       resp.TLSData,
+				ContentLength: resp.ContentLength,
+				StatusCode:    resp.StatusCode,
+				ResponseTime:  time.Since(timeStart).String(),
+				Str:           builder.String(),
+				Header:        resp.HeaderStr,
+				FirstLine:     resp.FirstLine,
+				Headers:       resp.Headers,
+				DataStr:       resp.DataStr,
+				Fingers:       fofaResults,
+				CDN:           cdn,
+			}
+		} else {
+			tlsdata := &httpx.TLSData{
+				DNSNames:           nil,
+				EmailAddresses:     nil,
+				CommonName:         nil,
+				Organization:       nil,
+				IssuerCommonName:   nil,
+				IssuerOrg:          nil,
+				OrganizationalUnit: nil,
+				Issuer:             nil,
+				Subject:            nil,
+			}
+			webbanner = result.FingerResult{
+				Title:         title,
+				TLSData:       tlsdata,
+				ContentLength: resp.ContentLength,
+				StatusCode:    resp.StatusCode,
+				ResponseTime:  time.Since(timeStart).String(),
+				Str:           builder.String(),
+				Header:        resp.HeaderStr,
+				FirstLine:     resp.FirstLine,
+				Headers:       resp.Headers,
+				DataStr:       resp.DataStr,
+				Fingers:       fofaResults,
+				CDN:           cdn,
+			}
+		}
+	} else {
+		webbanner = result.FingerResult{}
+	}
+	return webbanner
 }
 
 func (r *Runner) Close() {
