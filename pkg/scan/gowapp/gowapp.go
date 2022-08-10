@@ -1,6 +1,7 @@
 package gowapp
 
 import (
+	"BeeScan-scan/pkg/job"
 	log2 "BeeScan-scan/pkg/log"
 	"BeeScan-scan/pkg/result"
 	"embed"
@@ -43,11 +44,11 @@ func GowappConfig() *gowap.Config {
 	//Create a Config object and customize it
 	wapconfig := gowap.NewConfig()
 	//Timeout in seconds for fetching the url
-	wapconfig.TimeoutSeconds = 20
+	wapconfig.TimeoutSeconds = 5
 	//Timeout in seconds for loading the page
-	wapconfig.LoadingTimeoutSeconds = 20
+	wapconfig.LoadingTimeoutSeconds = 6
 	//Don't analyze page when depth superior to this number. Default (0) means no recursivity (only first page will be analyzed)
-	wapconfig.MaxDepth = 0
+	wapconfig.MaxDepth = 1
 	//Max number of pages to visit. Exit when reached
 	wapconfig.MaxVisitedLinks = 5
 	//Delay in ms between requests
@@ -72,7 +73,7 @@ func GowappInit(f embed.FS) (*gowap.Wappalyzer, error) {
 }
 
 // GoWapp Wappalyzer识别模块
-func GoWapp(r *result.Output, wapp *gowap.Wappalyzer) *gowap.Output {
+func GoWapp(r *result.Output, wapp *gowap.Wappalyzer, nodestate *job.NodeState, taskstate *job.TaskState) *gowap.Output {
 	if r.Webbanner.Header != "" {
 		if r != nil {
 			if r.Ip != "" {
@@ -84,14 +85,27 @@ func GoWapp(r *result.Output, wapp *gowap.Wappalyzer) *gowap.Output {
 		var fullUrl string
 		targetinfo := &gowap.Output{}
 		protocol := "http"
-		if r.Domain != "" {
-			fullUrl = fmt.Sprintf("%s://%s:%s/", protocol, r.Domain, r.Port)
-		} else {
-			fullUrl = fmt.Sprintf("%s://%s:%s/", protocol, r.Ip, r.Port)
+		if r.Domain != "" && r.Port != "80" {
+			fullUrl = fmt.Sprintf("%s://%s:%s", protocol, r.Domain, r.Port)
+		} else if r.Ip != "" && r.Port != "80" {
+			fullUrl = fmt.Sprintf("%s://%s:%s", protocol, r.Ip, r.Port)
+		} else if r.Domain != "" && r.Port == "80" {
+			fullUrl = fmt.Sprintf("%s://%s", protocol, r.Domain)
+		} else if r.Ip != "" && r.Port == "80" {
+			fullUrl = fmt.Sprintf("%s://%s", protocol, r.Ip)
 		}
 		res, _ := wapp.Analyze(fullUrl)
 		if res != nil {
 			targetinfo = res.(*gowap.Output)
+		}
+		nodestate.Running--
+		taskstate.Running--
+		nodestate.Finished++
+		taskstate.Finished++
+		if r.Ip != "" {
+			log2.Info("[Scanned]:", r.Ip)
+		} else if r.Domain != "" {
+			log2.Info("[Scanned]:", r.Domain)
 		}
 		return targetinfo
 	}

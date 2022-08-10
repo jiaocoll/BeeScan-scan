@@ -35,17 +35,15 @@ func WorkerInit(nodestate *job.NodeState, taskstate *job.TaskState, wg *sizedwai
 					}
 
 					tmpresult := runner.Scan(j.(*runner.Runner), GoNmap, region) // 执行扫描
-					nodestate.Running--
-					taskstate.Running--
-					nodestate.Finished++
-					taskstate.Finished++
-					if j.(*runner.Runner).Ip != "" {
-						log2.Info("[Scanned]:", j.(*runner.Runner).Ip)
-					} else if j.(*runner.Runner).Domain != "" {
-						log2.Info("[Scanning]:", j.(*runner.Runner).Domain)
+					if tmpresult != nil {
+						tmpresults <- tmpresult
+					} else {
+						nodestate.Running--
+						nodestate.Finished++
+						taskstate.Running--
+						taskstate.Finished++
 					}
 
-					tmpresults <- tmpresult
 					defer wg.Done()
 				}
 			}

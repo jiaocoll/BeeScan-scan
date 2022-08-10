@@ -22,7 +22,7 @@ func IcmpCheckAlive(host string, ip string) bool {
 		const EchoReplyHeadLen = 20
 
 		startTime := time.Now()
-		conn, err := net.DialTimeout("ip4:icmp", ip, 3*time.Second)
+		conn, err := net.DialTimeout("ip4:icmp", ip, 2*time.Second)
 		if err != nil {
 			log2.Warn("[IcmpCheck]", err)
 			return false
@@ -65,7 +65,7 @@ func IcmpCheckAlive(host string, ip string) bool {
 		const EchoReplyHeadLen = 20
 
 		startTime := time.Now()
-		conn, err := net.DialTimeout("ip4:icmp", host, 3*time.Second)
+		conn, err := net.DialTimeout("ip4:icmp", host, 2*time.Second)
 		if err != nil {
 			log2.Warn("[IcmpCheck]", err)
 			return false

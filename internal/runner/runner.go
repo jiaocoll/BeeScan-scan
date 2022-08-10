@@ -14,7 +14,6 @@ import (
 	"BeeScan-scan/pkg/scan/httpcheck"
 	"BeeScan-scan/pkg/scan/icmp"
 	"BeeScan-scan/pkg/scan/ipinfo"
-	"BeeScan-scan/pkg/scan/ping"
 	"BeeScan-scan/pkg/scan/tcp"
 	"BeeScan-scan/pkg/util"
 	"fmt"
@@ -103,9 +102,11 @@ func (r *Runner) Request() result.FingerResult {
 retry:
 	if r.Domain != "" && r.Port != "80" {
 		fullUrl = fmt.Sprintf("%s://%s:%s", protocol, r.Domain, r.Port)
-	} else if r.Port != "80" {
+	} else if r.Ip != "" && r.Port != "80" {
 		fullUrl = fmt.Sprintf("%s://%s:%s", protocol, r.Ip, r.Port)
-	} else {
+	} else if r.Domain != "" && r.Port == "80" {
+		fullUrl = fmt.Sprintf("%s://%s", protocol, r.Domain)
+	} else if r.Ip != "" && r.Port == "80" {
 		fullUrl = fmt.Sprintf("%s://%s", protocol, r.Ip)
 	}
 	timeStart := time.Now()
@@ -269,30 +270,38 @@ func HandleTargets(queue *job.Queue, fofaPrints *fringerprint.FofaPrints) []*Run
 							var runner2 *Runner
 							var err1 error
 							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-								ip := getipbydomain.GetIPbyDomain(t)
-								runner2, err1 = NewRunner(ip, target[2], t, "udp", fofaPrints)
+								ip, err := getipbydomain.GetIPbyDomain(t)
+								if err == nil {
+									runner2, err1 = NewRunner(ip, target[2], t, "udp", fofaPrints)
+								}
 							} else {
 								runner2, err1 = NewRunner(t, target[2], "", "udp", fofaPrints)
 							}
 							if err1 != nil {
 								log2.Error("[HandleTargets]:", err1)
 							}
-							runners = append(runners, runner2)
+							if runner2 != nil {
+								runners = append(runners, runner2)
+							}
 						}
 					} else {
 						for _, t := range tmptarget {
 							var runner2 *Runner
 							var err1 error
 							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-								ip := getipbydomain.GetIPbyDomain(t)
-								runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
+								ip, err := getipbydomain.GetIPbyDomain(t)
+								if err == nil {
+									runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
+								}
 							} else {
 								runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
 							}
 							if err1 != nil {
 								log2.Error("[HandleTargets]:", err1)
 							}
-							runners = append(runners, runner2)
+							if runner2 != nil {
+								runners = append(runners, runner2)
+							}
 						}
 					}
 
@@ -307,30 +316,38 @@ func HandleTargets(queue *job.Queue, fofaPrints *fringerprint.FofaPrints) []*Run
 							var runner2 *Runner
 							var err1 error
 							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-								ip := getipbydomain.GetIPbyDomain(t)
-								runner2, err1 = NewRunner(ip, target[1], t, "udp", fofaPrints)
+								ip, err := getipbydomain.GetIPbyDomain(t)
+								if err == nil {
+									runner2, err1 = NewRunner(ip, target[1], t, "udp", fofaPrints)
+								}
 							} else {
 								runner2, err1 = NewRunner(t, target[1], "", "udp", fofaPrints)
 							}
 							if err1 != nil {
 								log2.Error("[HandleTargets]:", err1)
 							}
-							runners = append(runners, runner2)
+							if runner2 != nil {
+								runners = append(runners, runner2)
+							}
 						}
 					} else {
 						for _, t := range tmptarget {
 							var runner2 *Runner
 							var err1 error
 							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-								ip := getipbydomain.GetIPbyDomain(t)
-								runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
+								ip, err := getipbydomain.GetIPbyDomain(t)
+								if err == nil {
+									runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
+								}
 							} else {
 								runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
 							}
 							if err1 != nil {
 								log2.Error("[HandleTargets]:", err1)
 							}
-							runners = append(runners, runner2)
+							if runner2 != nil {
+								runners = append(runners, runner2)
+							}
 						}
 					}
 
@@ -345,30 +362,39 @@ func HandleTargets(queue *job.Queue, fofaPrints *fringerprint.FofaPrints) []*Run
 							var runner2 *Runner
 							var err1 error
 							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-								ip := getipbydomain.GetIPbyDomain(t)
-								runner2, err1 = NewRunner(ip, target[1], t, "udp", fofaPrints)
+								ip, err := getipbydomain.GetIPbyDomain(t)
+								if err == nil {
+									runner2, err1 = NewRunner(ip, target[1], t, "udp", fofaPrints)
+								}
 							} else {
 								runner2, err1 = NewRunner(t, target[1], "", "udp", fofaPrints)
 							}
 							if err1 != nil {
 								log2.Error("[HandleTargets]:", err1)
 							}
-							runners = append(runners, runner2)
+							if runner2 != nil {
+								runners = append(runners, runner2)
+							}
 						}
 					} else {
 						for _, t := range tmptarget {
 							var runner2 *Runner
 							var err1 error
 							if strings.Contains(t, "com") || strings.Contains(t, "cn") {
-								ip := getipbydomain.GetIPbyDomain(t)
-								runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
+								ip, err := getipbydomain.GetIPbyDomain(t)
+								if err == nil {
+									runner2, err1 = NewRunner(ip, target[1], t, "tcp", fofaPrints)
+								}
+
 							} else {
 								runner2, err1 = NewRunner(t, target[1], "", "tcp", fofaPrints)
 							}
 							if err1 != nil {
 								log2.Error("[HandleTargets]:", err1)
 							}
-							runners = append(runners, runner2)
+							if runner2 != nil {
+								runners = append(runners, runner2)
+							}
 						}
 					}
 				}
@@ -387,63 +413,63 @@ func Scan(target *Runner, GoNmap *gonmap.VScan, region *ipinfo.Ip2Region) *resul
 	// 域名存在与否
 	if target.Domain != "" {
 		// 主机存活探测
-		if icmp.IcmpCheckAlive(target.Domain, target.Ip) || ping.PingCheckAlive(target.Domain) || httpcheck.HttpCheck(target.Domain, target.Port, target.Ip) || tcp.TcpCheckAlive(target.Ip, target.Port) {
+		if icmp.IcmpCheckAlive(target.Domain, target.Ip) || httpcheck.HttpCheck(target.Domain, target.Port, target.Ip) || tcp.TcpCheckAlive(target.Ip, target.Port) {
 
-			if tcp.TcpCheckAlive(target.Ip, target.Port) || httpcheck.HttpCheck(target.Domain, target.Port, target.Ip) {
-				// 普通端口探测
-				nmapbanner, err := gonmap.GoNmapScan(GoNmap, target.Ip, target.Port, target.Protocol)
-				if nmapbanner != nil {
-					target.Output.Servers = nmapbanner
-				}
-				if strings.Contains(target.Output.Servers.Banner, "HTTP") {
-					target.Output.Servers.Name = "http"
-					target.Output.Servername = "http"
-				} else {
-					target.Output.Servername = nmapbanner.Name
-
-				}
-				// web端口探测
-				webresult := result.FingerResult{}
-				if target.Output.Servername == "http" {
-					webresult = target.Request()
-				}
-				target.Output.Webbanner = webresult
-				target.Output.Ip = target.Ip
-				target.Output.Port = target.Port
-				target.Output.Protocol = strings.ToUpper(target.Protocol)
-				target.Output.Domain = target.Domain
-
-				if webresult.Header != "" {
-					target.Output.Banner = target.Output.Webbanner.Header
-				} else {
-					target.Output.Banner = nmapbanner.Banner
-				}
-				// ip信息查询
-				info, err := ipinfo.GetIpinfo(region, target.Ip)
-				if err != nil {
-					log2.Warn("[GetIPInfo]:", err)
-				}
-				target.Output.City = info.City
-				target.Output.Region = info.Region
-				target.Output.ISP = info.ISP
-				target.Output.CityId = info.CityId
-				target.Output.Province = info.Province
-				target.Output.Country = info.Country
-				target.Output.TargetId = target.Ip + "-" + target.Port + "-" + target.Domain
-				if target.Output.Port == "80" {
-					target.Output.Target = "http://" + target.Domain
-				} else {
-					target.Output.Target = "http://" + target.Domain + ":" + target.Output.Port
-				}
-				target.Output.LastTime = time.Now().Format("2006-01-02 15:04:05")
-				return target.Output
+			// 普通端口探测
+			nmapbanner, err := gonmap.GoNmapScan(GoNmap, target.Ip, target.Port, target.Protocol)
+			if nmapbanner != nil {
+				target.Output.Servers = nmapbanner
 			}
+			if strings.Contains(target.Output.Servers.Banner, "HTTP") {
+				target.Output.Servers.Name = "http"
+				target.Output.Servername = "http"
+			} else {
+				target.Output.Servername = nmapbanner.Name
+
+			}
+			// web端口探测
+			webresult := result.FingerResult{}
+			if target.Output.Servername == "http" {
+				webresult = target.Request()
+			}
+			target.Output.Webbanner = webresult
+			target.Output.Ip = target.Ip
+			target.Output.Port = target.Port
+			target.Output.Protocol = strings.ToUpper(target.Protocol)
+			target.Output.Domain = target.Domain
+
+			if webresult.Header != "" {
+				target.Output.Banner = target.Output.Webbanner.Header
+			} else {
+				target.Output.Banner = nmapbanner.Banner
+			}
+			// ip信息查询
+			info, err := ipinfo.GetIpinfo(region, target.Ip)
+			if err != nil {
+				log2.Warn("[GetIPInfo]:", err)
+			}
+			target.Output.City = info.City
+			target.Output.Region = info.Region
+			target.Output.ISP = info.ISP
+			target.Output.CityId = info.CityId
+			target.Output.Province = info.Province
+			target.Output.Country = info.Country
+			target.Output.TargetId = target.Ip + "-" + target.Port + "-" + target.Domain
+			if target.Output.Port == "80" {
+				target.Output.Target = "http://" + target.Domain
+			} else {
+				target.Output.Target = "http://" + target.Domain + ":" + target.Output.Port
+			}
+			target.Output.LastTime = time.Now().Format("2006-01-02 15:04:05")
+			return target.Output
+		} else {
+			return nil
 		}
 	} else {
 		if cdncheck.IPCDNCheck(target.Ip) != true { //判断IP是否存在CDN
 
 			// 主机存活探测
-			if icmp.IcmpCheckAlive("", target.Ip) || ping.PingCheckAlive(target.Ip) || httpcheck.HttpCheck(target.Domain, target.Port, target.Ip) || tcp.TcpCheckAlive(target.Ip, target.Port) {
+			if icmp.IcmpCheckAlive("", target.Ip) || httpcheck.HttpCheck(target.Domain, target.Port, target.Ip) || tcp.TcpCheckAlive(target.Ip, target.Port) {
 
 				// 普通端口探测
 				nmapbanner, err := gonmap.GoNmapScan(GoNmap, target.Ip, target.Port, target.Protocol)
@@ -491,6 +517,8 @@ func Scan(target *Runner, GoNmap *gonmap.VScan, region *ipinfo.Ip2Region) *resul
 				}
 				target.Output.LastTime = time.Now().Format("2006-01-02 15:04:05")
 				return target.Output
+			} else {
+				return nil
 			}
 		}
 	}

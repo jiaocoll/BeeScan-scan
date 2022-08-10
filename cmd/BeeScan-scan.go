@@ -26,6 +26,7 @@ import (
 	_ "github.com/projectdiscovery/fdmax/autofdmax"
 	"github.com/remeh/sizedwaitgroup"
 	"go.uber.org/ratelimit"
+	"os"
 	"time"
 )
 
@@ -99,9 +100,6 @@ func main() {
 	// 扫描节点状态更新
 	go func() {
 		for true {
-			if nodestate.State == "Running" {
-				log2.InfoOutput("[Tasks]:", nodestate.Tasks, "[Running]:", nodestate.Running, "[Finished]:", nodestate.Finished)
-			}
 			node.NodeUpdate(conn, config.GlobalConfig.NodeConfig.NodeName, nodestate)
 			node.TaskUpdate(conn, taskstate)
 			time.Sleep(5 * time.Second)
@@ -153,7 +151,7 @@ func main() {
 					tmpres := <-tmpresults
 					if tmpres != nil {
 						if tmpres.Banner != "" || tmpres.Servername == "http" {
-							tmpres.Wappalyzer = gowapp.GoWapp(tmpres, wapp)
+							tmpres.Wappalyzer = gowapp.GoWapp(tmpres, wapp, nodestate, taskstate)
 							time.Sleep(500 * time.Millisecond)
 							results <- tmpres
 						}
@@ -192,14 +190,25 @@ func main() {
 
 	// 扫描节点状态更新
 	//node.NodeUpdate(conn, config.GlobalConfig.NodeConfig.NodeName, nodestate)
+
 	go func() {
 		for true {
-			if len(jobs) == 0 {
-				log2.InfoOutput("[ConnectCheck]")
+			log2.InfoOutput("[ConnectCheck]")
+			if !db.CheckRedisConnect(conn) {
+				log2.ErrorOutput("[ConnectCheck]: Please check redis or node!")
+				if nodestate.Tasks == nodestate.Finished {
+					os.Exit(1)
+				}
+			}
+			time.Sleep(15 * time.Second)
+		}
+	}()
+
+	go func() {
+		for true {
+			if len(jobs) == 0 && nodestate.Running == 0 {
 				nodestate.State = "Free"
 				taskstate.Name = ""
-				taskstate.Running = 0
-				taskstate.Finished = 0
 				// 节点每运行15天会定时重新扫描es数据库中一定时长的目标
 				if util.DaySub(nodestate.StartTime) > 15 && util.DaySub(nodestate.StartTime)%15 == 0 {
 					RegularTargets := db.EsScanRegular(esclient)
@@ -211,7 +220,7 @@ func main() {
 						}
 					}
 				}
-				time.Sleep(10 * time.Second)
+				time.Sleep(20 * time.Second)
 			}
 		}
 	}()

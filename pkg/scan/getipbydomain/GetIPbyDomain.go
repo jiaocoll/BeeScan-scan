@@ -82,15 +82,15 @@ func ClientPublicIP(r *http.Request) string {
 }
 
 // GetIPbyDomain 通过域名获取IP地址
-func GetIPbyDomain(domain string) string {
+func GetIPbyDomain(domain string) (string, error) {
 	addr, err := net.ResolveIPAddr("ip", domain)
 	if err != nil {
 		log2.Warn("[GetIPbyDomain]:", err)
 	}
 	if addr != nil {
 		if addr.IP.IsPrivate() != true {
-			return addr.IP.String()
+			return addr.IP.String(), nil
 		}
 	}
-	return ""
+	return "", err
 }

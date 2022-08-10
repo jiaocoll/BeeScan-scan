@@ -33,7 +33,7 @@ func HttpCheck(domain string, port string, ip string) bool {
 	defer fasthttp.ReleaseRequest(req)
 	req.Header.SetMethod("GET")
 	req.SetRequestURI(url)
-	err := fasthttp.DoTimeout(req, nil, 3*time.Second)
+	err := fasthttp.DoTimeout(req, nil, 2*time.Second)
 	if err != nil {
 		log2.Warn("[HttpCheck]:", err)
 		return false

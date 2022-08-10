@@ -6,7 +6,7 @@ require (
 	github.com/boy-hack/govaluate v3.1.0+incompatible
 	github.com/fatih/color v1.13.0
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/jiaocoll/GoWapp v0.0.1
+	github.com/jiaocoll/GoWapp v0.0.5
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/olivere/elastic/v7 v7.0.31
 	github.com/panjf2000/ants/v2 v2.4.7

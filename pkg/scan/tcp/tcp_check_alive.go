@@ -36,7 +36,7 @@ var (
 func TcpCheckAlive(host string, port string) bool {
 	log2.Info("[TcpCheck]:", host)
 
-	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", host, port), 3*time.Second)
+	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", host, port), 2*time.Second)
 	if conn != nil {
 		defer conn.Close()
 	}

@@ -32,6 +32,16 @@ func InitRedis() *redis.Client {
 	return conn
 }
 
+func CheckRedisConnect(conn *redis.Client) bool {
+	Pong, err := conn.Ping().Result()
+	if err != nil {
+		return false
+	} else if Pong == "PONG" {
+		return true
+	}
+	return false
+}
+
 // RecvJob 从消息队列接收任务
 func RecvJob(c *redis.Client) []string {
 	val := c.BLPop(3*time.Second, config.GlobalConfig.NodeConfig.NodeQueue)
