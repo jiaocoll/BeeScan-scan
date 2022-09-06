@@ -37,7 +37,7 @@ DBConfig:
     host: "127.0.0.1"
     password: ""
     port: "6379"
-    database: ""
+    database: 0
   # Elasticsearch配置
   Elasticsearch:
     host: "127.0.0.1"

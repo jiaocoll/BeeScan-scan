@@ -25,7 +25,7 @@ type Redis struct {
 	Password string
 	Port     string
 	User     string
-	Database string
+	Database int
 }
 
 type Elasticsearch struct {

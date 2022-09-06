@@ -18,8 +18,8 @@ import (
 func InitRedis() *redis.Client {
 	conn := redis.NewClient(&redis.Options{
 		Addr:     config.GlobalConfig.DBConfig.Redis.Host + ":" + config.GlobalConfig.DBConfig.Redis.Port,
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Password: config.GlobalConfig.DBConfig.Redis.Password, // password set
+		DB:       config.GlobalConfig.DBConfig.Redis.Database,
 	})
 
 	Pong, err := conn.Ping().Result()
